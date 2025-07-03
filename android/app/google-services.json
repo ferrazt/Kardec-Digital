@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "879734462680",
+    "project_id": "kardec-digital",
+    "storage_bucket": "kardec-digital.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879734462680:android:9ed3c3db4230b166fe5fad",
+        "android_client_info": {
+          "package_name": "br.com.jaff.biblioteca.kardec"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtQvVIirhO1YbhMpLogjhDvpIMPzKQWgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879734462680:android:60387c63a4cda6ddfe5fad",
+        "android_client_info": {
+          "package_name": "br.com.jaff.biblioteca.kardec.kardec_digital"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtQvVIirhO1YbhMpLogjhDvpIMPzKQWgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
