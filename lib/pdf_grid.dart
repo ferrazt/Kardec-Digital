@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
+import 'package:kardec_digital/pdf_viewer_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'storage_helper.dart';
-import 'pdf_viewer_screen.dart';
 
 class NetflixStylePDFList extends StatelessWidget {
   const NetflixStylePDFList({super.key});
@@ -31,12 +31,20 @@ class NetflixStylePDFList extends StatelessWidget {
           byAuthor.putIfAbsent(a, () => []).add(d);
         }
 
-        // Para cada autor, um carrossel
+        // === INÍCIO DA CORREÇÃO ===
+        // 1. Pega as entradas do mapa (autor e sua lista de livros) e converte para uma lista.
+        final sortedEntries = byAuthor.entries.toList();
+
+        // 2. Ordena essa lista em ordem alfabética usando a chave (o nome do autor).
+        sortedEntries.sort((a, b) => a.key.compareTo(b.key));
+        // === FIM DA CORREÇÃO ===
+
+        // Para cada autor, um carrossel, agora usando a lista ordenada.
         return Column(
-          children: byAuthor.entries.map((e) {
+          children: sortedEntries.map((entry) { // Modificado de byAuthor.entries para sortedEntries
             return _AuthorCarousel(
-              author: e.key,
-              books: e.value,
+              author: entry.key,
+              books: entry.value,
             );
           }).toList(),
         );
@@ -52,12 +60,22 @@ class _AuthorCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ordena os livros dentro do carrossel por título
+    books.sort((a, b) {
+      final aData = a.data()! as Map<String, dynamic>;
+      final bData = b.data()! as Map<String, dynamic>;
+      final aTitle = aData['titulo'] as String? ?? a.id;
+      final bTitle = bData['titulo'] as String? ?? b.id;
+      return aTitle.compareTo(bTitle);
+    });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
-          child: Text(author,
+          child: Text(
+            author,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -67,13 +85,16 @@ class _AuthorCarousel extends StatelessWidget {
             height: 220,
             enlargeCenterPage: true,
             viewportFraction: 0.4,
-            autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 4),
+            autoPlay: books.length > 2, // Desativa o autoPlay se tiver poucos livros
+            autoPlayInterval: const Duration(seconds: 5),
           ),
           itemBuilder: (ctx, i, realIdx) {
-            final data = books[i].data()! as Map<String, dynamic>;
+            final doc = books[i];
+            final data = doc.data()! as Map<String, dynamic>;
+            final title = (data['titulo'] as String?) ?? doc.id;
+
             return _BookCard(
-              title: books[i].id,
+              title: title,
               coverPath: data['capaPath'] as String? ?? '',
               pdfPath: data['pdfPath'] as String? ?? '',
             );
@@ -103,17 +124,21 @@ class _BookCard extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => PDFViewerScreen(
               url: url,
-              title: title, // Passe o título do livro
+              title: title,
             ),
           ),
         );
       },
       child: Card(
         clipBehavior: Clip.hardEdge,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           children: [
             Expanded(
-              child: buildCoverFromBytes(coverPath), // Corrigido anteriormente
+              child: buildCoverWithCache(coverPath),
             ),
             Padding(
               padding: const EdgeInsets.all(8),

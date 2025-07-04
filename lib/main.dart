@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'MyHomePageState.dart';
+import 'my_homepage_state.dart'; // Your main content screen
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
@@ -15,7 +15,7 @@ class KardecDigitalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = ColorScheme.fromSeed(seedColor: Colors.teal);
+    final base = ColorScheme.fromSeed(seedColor: Colors.teal); // Your original theme setup
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kardec Digital',
@@ -23,12 +23,12 @@ class KardecDigitalApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: base,
         textTheme: GoogleFonts.openSansTextTheme(),
-        cardTheme: CardThemeData( // Altere de CardTheme para CardThemeData
+        cardTheme: CardThemeData(
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      home: const MyHomePage(),
+      home: const MyHomePage(), // Your existing MyHomePage with the carousel
     );
   }
 }
