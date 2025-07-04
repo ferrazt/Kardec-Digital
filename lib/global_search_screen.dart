@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kardec_digital/local_storage_helper.dart';
 import 'package:kardec_digital/pdf_viewer_screen.dart';
 import 'package:kardec_digital/storage_helper.dart';
 
@@ -30,7 +31,8 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   }
 
   Future<void> _loadAllBooks() async {
-    final querySnapshot = await FirebaseFirestore.instance.collection('pdfs').get();
+    final querySnapshot =
+    await FirebaseFirestore.instance.collection('pdfs').get();
     setState(() {
       _allBooks = querySnapshot.docs;
       _displayedBooks = _allBooks;
@@ -66,7 +68,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
             padding: const EdgeInsets.all(12.0),
             child: TextField(
               controller: _searchController,
-              autofocus: true, // Foca no campo de busca ao abrir a tela
+              autofocus: true,
               decoration: InputDecoration(
                 hintText: 'Digite o título ou autor...',
                 prefixIcon: const Icon(Icons.search),
@@ -92,23 +94,29 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
               itemBuilder: (context, index) {
                 final doc = _displayedBooks[index];
                 final data = doc.data();
-                final title = (data['titulo'] as String?) ?? doc.id;
-                final author = (data['autor'] as String?) ?? 'Desconhecido';
+                final title =
+                    (data['titulo'] as String?) ?? 'Título desconhecido';
+                final author =
+                    (data['autor'] as String?) ?? 'Autor desconhecido';
+                final pdfPath = data['pdfPath'] as String;
 
                 return ListTile(
                   leading: SizedBox(
                     width: 50,
                     height: 80,
-                    child: buildCoverWithCache(data['capaPath'] as String),
+                    child:
+                    buildCoverWithCache(data['capaPath'] as String),
                   ),
                   title: Text(title),
                   subtitle: Text(author),
                   onTap: () async {
-                    final url = await getDownloadUrl(data['pdfPath'] as String);
+                    await LocalStorageHelper.addToHistory(pdfPath);
+                    final url = await getDownloadUrl(pdfPath);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => PDFViewerScreen(url: url, title: title),
+                        builder: (_) => PDFViewerScreen(
+                            url: url, title: title, pdfPath: pdfPath),
                       ),
                     );
                   },

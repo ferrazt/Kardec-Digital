@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kardec_digital/authors_list_screen.dart';
 import 'package:kardec_digital/global_search_screen.dart';
+import 'package:kardec_digital/spiritual_authors_list_screen.dart';
 import 'pdf_grid.dart';
+import 'package:kardec_digital/history_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -96,13 +98,14 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
       bottomNavigationBar: BottomAppBar(
-        // As propriedades 'shape' e 'notchMargin' foram removidas para a barra ficar reta.
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // MUDANÇA: De 'spaceBetween' para 'spaceAround' para distribuir 3 itens
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
+            // Botão 1: Autores Mediúnicos
             IconButton(
               icon: const Icon(Icons.menu_book),
-              tooltip: 'Ver todos os autores',
+              tooltip: 'Ver autores mediúnicos',
               onPressed: () {
                 Navigator.push(
                   context,
@@ -110,6 +113,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
+
+            // NOVO BOTÃO: Autores Espirituais
+            IconButton(
+              icon: const Icon(Icons.groups_outlined),
+              tooltip: 'Ver autores espirituais',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SpiritualAuthorsListScreen()),
+                );
+              },
+            ),
+
+            // Botão 3: Pesquisa
             IconButton(
               icon: const Icon(Icons.search),
               tooltip: 'Pesquisar na biblioteca',
@@ -117,6 +134,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const GlobalSearchScreen()),
+                );
+              },
+            ),
+
+            IconButton(
+              icon: const Icon(Icons.history),
+              tooltip: 'Histórico de Leitura',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
                 );
               },
             ),

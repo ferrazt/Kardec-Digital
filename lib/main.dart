@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'my_homepage_state.dart'; // Your main content screen
+import 'my_homepage_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
@@ -15,7 +15,7 @@ class KardecDigitalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = ColorScheme.fromSeed(seedColor: Colors.teal); // Your original theme setup
+    final base = ColorScheme.fromSeed(seedColor: Colors.teal);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kardec Digital',
@@ -28,7 +28,7 @@ class KardecDigitalApp extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      home: const MyHomePage(), // Your existing MyHomePage with the carousel
+      home: const MyHomePage(),
     );
   }
 }

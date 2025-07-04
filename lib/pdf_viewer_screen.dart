@@ -2,13 +2,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
+import 'package:kardec_digital/local_storage_helper.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PDFViewerScreen extends StatefulWidget {
   final String url;
-  final String title; // Novo parâmetro para o título do livro
+  final String title;
+  final String pdfPath;
 
-  const PDFViewerScreen({required this.url, required this.title, super.key}); // Adicione o título como parâmetro requerido
+  const PDFViewerScreen(
+      {required this.url,
+        required this.title,
+        required this.pdfPath,
+        super.key});
 
   @override
   _PDFViewerScreenState createState() => _PDFViewerScreenState();
@@ -19,11 +25,22 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
   String? errorMessage;
   int? pages;
   bool isReady = false;
+  int initialPage = 0;
 
   @override
   void initState() {
     super.initState();
+    _loadInitialPage();
     _downloadAndSavePDF();
+  }
+
+  Future<void> _loadInitialPage() async {
+    final page = await LocalStorageHelper.getReadingPosition(widget.pdfPath);
+    if (mounted) {
+      setState(() {
+        initialPage = page;
+      });
+    }
   }
 
   Future<void> _downloadAndSavePDF() async {
@@ -53,22 +70,31 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title), // Use o título do livro na AppBar
+        toolbarHeight: 80,
+        title: Text(
+          widget.title,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+          softWrap: true,
+        ),
+        centerTitle: true,
       ),
       body: SafeArea(
+        top: false,
         child: errorMessage != null
             ? Center(child: Text(errorMessage!))
             : localPath != null
             ? PDFView(
           filePath: localPath!,
+          defaultPage: initialPage,
           autoSpacing: true,
           enableSwipe: true,
           swipeHorizontal: true,
           fitPolicy: FitPolicy.WIDTH,
           pageFling: true,
-          onRender: (pages) {
+          onRender: (_pages) {
             setState(() {
-              pages = pages;
+              pages = _pages;
               isReady = true;
             });
           },
@@ -89,9 +115,10 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
             );
           },
           onPageChanged: (page, total) {
-            setState(() {
-              // Atualiza a página atual
-            });
+            if (page != null) {
+              LocalStorageHelper.saveReadingPosition(
+                  widget.pdfPath, page);
+            }
           },
         )
             : const Center(child: CircularProgressIndicator()),

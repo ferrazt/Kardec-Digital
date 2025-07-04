@@ -1,7 +1,6 @@
-// Arquivo: lib/author_books_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kardec_digital/local_storage_helper.dart';
 import 'package:kardec_digital/storage_helper.dart';
 import 'package:kardec_digital/pdf_viewer_screen.dart';
 
@@ -58,7 +57,8 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
         _displayedBooks = _allBooks;
       } else {
         _displayedBooks = _allBooks.where((doc) {
-          final title = ((doc.data())['titulo'] as String? ?? doc.id).toLowerCase();
+          final title =
+          ((doc.data())['titulo'] as String? ?? doc.id).toLowerCase();
           return title.contains(query);
         }).toList();
       }
@@ -106,7 +106,8 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
             )
                 : GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
@@ -117,14 +118,20 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
                 final doc = _displayedBooks[index];
                 final data = doc.data();
                 final title = (data['titulo'] as String?) ?? doc.id;
+                final pdfPath = data['pdfPath'] as String;
 
                 return GestureDetector(
                   onTap: () async {
-                    final url = await getDownloadUrl(data['pdfPath'] as String);
+                    await LocalStorageHelper.addToHistory(pdfPath);
+                    final url = await getDownloadUrl(pdfPath);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => PDFViewerScreen(url: url, title: title),
+                        builder: (_) => PDFViewerScreen(
+                          url: url,
+                          title: title,
+                          pdfPath: pdfPath,
+                        ),
                       ),
                     );
                   },
@@ -138,7 +145,8 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Expanded(
-                          child: buildCoverWithCache(data['capaPath'] as String),
+                          child: buildCoverWithCache(
+                              data['capaPath'] as String),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -147,7 +155,10 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],

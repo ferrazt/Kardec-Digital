@@ -1,4 +1,3 @@
-// storage_helper.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +15,14 @@ Future<String> getDownloadUrl(String path) async {
 }
 
 Widget buildCoverWithCache(String coverPath) {
-  // Se o caminho da capa estiver vazio, retorna um ícone de erro.
   if (coverPath.isEmpty) {
     return const Center(child: Icon(Icons.error, size: 50, color: Colors.red));
   }
 
-  // Usamos um FutureBuilder apenas para obter a URL de download da imagem.
   return FutureBuilder<String>(
-    future: getDownloadUrl(coverPath), // Pega a URL de download
+    future: getDownloadUrl(coverPath),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        // Mostra um efeito de shimmer enquanto a URL é obtida.
         return Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[100]!,
@@ -42,14 +38,13 @@ Widget buildCoverWithCache(String coverPath) {
         imageUrl: snapshot.data!,
         fit: BoxFit.cover,
         width: double.infinity,
-        // Efeito de shimmer enquanto a imagem baixa da rede (só na 1ª vez)
         placeholder: (context, url) => Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[100]!,
           child: Container(color: Colors.white),
         ),
-        // Widget a ser mostrado se houver erro no download da imagem.
-        errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
+        errorWidget: (context, url, error) =>
+        const Center(child: Icon(Icons.error)),
       );
     },
   );

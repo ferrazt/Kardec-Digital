@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
+import 'package:kardec_digital/local_storage_helper.dart';
 import 'package:kardec_digital/pdf_viewer_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'storage_helper.dart';
@@ -23,7 +24,6 @@ class NetflixStylePDFList extends StatelessWidget {
         final docs = snap.data?.docs ?? [];
         if (docs.isEmpty) return const Center(child: Text('Nenhum PDF'));
 
-        // Agrupa por autor
         final Map<String, List<QueryDocumentSnapshot>> byAuthor = {};
         for (var d in docs) {
           final data = d.data()! as Map<String, dynamic>;
@@ -31,17 +31,11 @@ class NetflixStylePDFList extends StatelessWidget {
           byAuthor.putIfAbsent(a, () => []).add(d);
         }
 
-        // === INÍCIO DA CORREÇÃO ===
-        // 1. Pega as entradas do mapa (autor e sua lista de livros) e converte para uma lista.
         final sortedEntries = byAuthor.entries.toList();
-
-        // 2. Ordena essa lista em ordem alfabética usando a chave (o nome do autor).
         sortedEntries.sort((a, b) => a.key.compareTo(b.key));
-        // === FIM DA CORREÇÃO ===
 
-        // Para cada autor, um carrossel, agora usando a lista ordenada.
         return Column(
-          children: sortedEntries.map((entry) { // Modificado de byAuthor.entries para sortedEntries
+          children: sortedEntries.map((entry) {
             return _AuthorCarousel(
               author: entry.key,
               books: entry.value,
@@ -60,7 +54,6 @@ class _AuthorCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ordena os livros dentro do carrossel por título
     books.sort((a, b) {
       final aData = a.data()! as Map<String, dynamic>;
       final bData = b.data()! as Map<String, dynamic>;
@@ -85,7 +78,7 @@ class _AuthorCarousel extends StatelessWidget {
             height: 220,
             enlargeCenterPage: true,
             viewportFraction: 0.4,
-            autoPlay: books.length > 2, // Desativa o autoPlay se tiver poucos livros
+            autoPlay: books.length > 2,
             autoPlayInterval: const Duration(seconds: 5),
           ),
           itemBuilder: (ctx, i, realIdx) {
@@ -118,6 +111,7 @@ class _BookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
+        await LocalStorageHelper.addToHistory(pdfPath);
         final url = await getDownloadUrl(pdfPath);
         Navigator.push(
           context,
@@ -125,6 +119,7 @@ class _BookCard extends StatelessWidget {
             builder: (_) => PDFViewerScreen(
               url: url,
               title: title,
+              pdfPath: pdfPath,
             ),
           ),
         );

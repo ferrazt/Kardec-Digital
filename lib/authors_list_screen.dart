@@ -1,5 +1,3 @@
-// Arquivo: lib/authors_list_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kardec_digital/author_books_screen.dart';
@@ -39,7 +37,7 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Autores'),
+        title: const Text('Psicografado por:'),
       ),
       body: FutureBuilder<List<String>>(
         future: _authorsFuture,
