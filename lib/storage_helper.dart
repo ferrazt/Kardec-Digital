@@ -2,8 +2,9 @@
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'main.dart'; // para usar o mesmo `logger`
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 /// Retorna a URL pública para PDF (usada no onTap)
 Future<String> getDownloadUrl(String path) async {
