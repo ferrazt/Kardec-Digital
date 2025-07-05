@@ -107,8 +107,7 @@ class _TelaLeitorPdfState extends State<TelaLeitorPdf> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
-        title: Text(widget.title, maxLines: 2, textAlign: TextAlign.center),
-        centerTitle: true,
+        title: Text(widget.title, maxLines: 2, textAlign: TextAlign.left),
       ),
       body: SafeArea(
         top: false,
