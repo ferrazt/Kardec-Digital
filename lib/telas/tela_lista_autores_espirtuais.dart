@@ -1,40 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kardec_digital/spirit_books_screen.dart';
+import '../servicos/servicos_firebase.dart';
+import 'tela_livros_espirito.dart';
 
-class SpiritualAuthorsListScreen extends StatefulWidget {
-  const SpiritualAuthorsListScreen({Key? key}) : super(key: key);
+/// Tela que exibe uma lista de todos os autores espirituais.
+class TelaListaAutoresEspirituais extends StatefulWidget {
+  const TelaListaAutoresEspirituais({super.key});
 
   @override
-  State<SpiritualAuthorsListScreen> createState() =>
-      _SpiritualAuthorsListScreenState();
+  State<TelaListaAutoresEspirituais> createState() =>
+      _TelaListaAutoresEspirituaisState();
 }
 
-class _SpiritualAuthorsListScreenState
-    extends State<SpiritualAuthorsListScreen> {
-  late final Future<List<String>> _spiritsFuture;
+class _TelaListaAutoresEspirituaisState
+    extends State<TelaListaAutoresEspirituais> {
+  final _servicosFirebase = ServicosFirebase();
+  late final Future<List<String>> _espiritosFuture;
 
   @override
   void initState() {
     super.initState();
-    _spiritsFuture = _getAllSpirits();
-  }
-
-  Future<List<String>> _getAllSpirits() async {
-    final querySnapshot =
-    await FirebaseFirestore.instance.collection('pdfs').get();
-    final Set<String> spirits = {};
-    for (var doc in querySnapshot.docs) {
-      final data = doc.data();
-      if (data.containsKey('espirito') &&
-          data['espirito'] != null &&
-          (data['espirito'] as String).trim().isNotEmpty) {
-        spirits.add(data['espirito'] as String);
-      }
-    }
-    final sortedSpirits = spirits.toList();
-    sortedSpirits.sort();
-    return sortedSpirits;
+    _espiritosFuture = _servicosFirebase.getTodosAutoresEspirituais();
   }
 
   @override
@@ -44,7 +29,7 @@ class _SpiritualAuthorsListScreenState
         title: const Text('Autores Espirituais'),
       ),
       body: FutureBuilder<List<String>>(
-        future: _spiritsFuture,
+        future: _espiritosFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -68,7 +53,7 @@ class _SpiritualAuthorsListScreenState
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
-                          SpiritBooksScreen(spiritName: spiritName),
+                          TelaLivrosEspirito(spiritName: spiritName),
                     ),
                   );
                 },
